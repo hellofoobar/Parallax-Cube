@@ -9,7 +9,7 @@ import java.awt.geom.Ellipse2D;
 import javax.swing.event.*;
 
 /**
- * This class
+ * This class defines a cube component with parallax effect and mouse event actions
  */
 public class CubeComponent extends JComponent implements MouseInputListener, MouseWheelListener, ComponentListener {
 
@@ -23,7 +23,6 @@ public class CubeComponent extends JComponent implements MouseInputListener, Mou
    public static int windowHeight = FrameViewer.HEIGHT;
    public static Point3D eyePoint = new Point3D(windowWidth/2, windowHeight/2, 0); // Coordinates in 3D space of user's eye
 
-
    public double sphereRad = Math.sqrt(cube.getCubeLength() * cube.getCubeLength() * 3 / 4); // Radius of a sphere centred in the middle of the cube passing through each vertex
    public double startX = windowWidth/2 - cube.getCubeLength() /2; // The initial 3D coordinates
    public double startY = windowHeight/2 - cube.getCubeLength() /2; // of the vertex beginning
@@ -33,13 +32,7 @@ public class CubeComponent extends JComponent implements MouseInputListener, Mou
    public int oldY; // vertex before a mouse movement
    public boolean isOutOfBounds; // Has the mouse pointer been dragged out of the rotatable area?
 
-
    public Point3D[] vertexArray3D = new Point3D[8]; // Vertices of cube in 3D space
-//   public static PlanePoint[] vertexArray2D = new PlanePoint[8]; // Vertices of cube in plane of screen
-//   public Boolean[] visibleVertices = new Boolean[8]; // Which of the 8 vertices can be seen?
-//   public int[] xPoints = new int[4]; // Stores x and y coordinates of the
-//   public int[] yPoints = new int[4]; // polygon (representing a face) to be drawn
-
 
    /**
     * constructor for event listeners, and cube's vertex coordinates
@@ -60,8 +53,8 @@ public class CubeComponent extends JComponent implements MouseInputListener, Mou
       vertexArray3D[7] = new Point3D(startX + cube.getCubeLength(), startY, startZ + cube.getCubeLength());
    }
 
-   double velocityX = 4;
-   double velocityY = 4;
+   double velocityX = 2;
+   double velocityY = 2;
 
    @Override
    public void paintComponent(Graphics g) {
@@ -69,11 +62,9 @@ public class CubeComponent extends JComponent implements MouseInputListener, Mou
 
       // Converts the vertex coordinates to 2D points
       for (int i = 0; i <= 7; i++) {
-         //cube.vertexArray2D[i] = vertexArray3D[i].convertTo2D();
          cube.setVertexArray2D(vertexArray3D[i].convertTo2D(), i);
       }
       // Calculates which vertices are visible
-      //cube.visibleVertices = isVisible(vertexArray3D);
       cube.setVisibleVertices(isVisible(vertexArray3D));
 
       if (isBounceMode) {
@@ -85,8 +76,8 @@ public class CubeComponent extends JComponent implements MouseInputListener, Mou
          g.setColor(Color.MAGENTA);
          g2.fill(modeSelection);
          g.setColor(Color.black);
-//         g.setFont(new Font("HonMincho", 0, 18));
-//         g.drawString("Click dot to enter Translate Mode", 15, 60);
+         g.setFont(new Font("HonMincho", 0, 18));
+         g.drawString("Click dot to enter Drag Mode", 15, 60);
 
       } else {
 
@@ -95,10 +86,10 @@ public class CubeComponent extends JComponent implements MouseInputListener, Mou
          g.setColor(Color.MAGENTA);
          g2.fill(modeSelection);
          g.setColor(Color.black);
-//         g.setFont(new Font("HonMincho", 0, 18));
-//         g.drawString("Click dot to enter Bounce Mode", 15, 60);
-//         g.setFont(new Font("HonMincho", 0, 18));
-//         g.drawString("Click anywhere and start dragging the cube", getWidth()/2 - 200, 60);
+         g.setFont(new Font("HonMincho", 0, 18));
+         g.drawString("Click dot to enter Bounce & Drag Mode", 15, 60);
+         g.setFont(new Font("HonMincho", 0, 18));
+         g.drawString("Click anywhere and start dragging the cube", getWidth()/2 - 200, 90);
       }
    }
 
@@ -151,14 +142,18 @@ public class CubeComponent extends JComponent implements MouseInputListener, Mou
       return new Point3D(b.getX() + p.getX(), b.getY() + p.getY(), b.getZ() + p.getZ());
    }
 
-   // Calculates where the user's eye should be according
-// to the current window size (called after a resize)
+   /**
+    * calculate centre point of window
+    */
    void setEyePoint() {
       eyePoint = new Point3D(this.getWidth()/2, this.getHeight()/2, 0);
    }
 
-   // Required empty methods for MouseInputListener,
-// MouseWheelListener and ComponentListener
+
+   /**
+    * register mouse click to switch modes
+    * @param e mouse event
+    */
    public void mouseClicked(MouseEvent e) {
       if (modeSelection.contains(e.getX(), e.getY())) {
          isBounceMode = !isBounceMode;
@@ -180,10 +175,10 @@ public class CubeComponent extends JComponent implements MouseInputListener, Mou
    public void componentMoved(ComponentEvent e) {
    }
 
-   // When mouse is pressed before a drag, this method
-// stores the coordinates of the mouse pointer and
-// calculates which vertex the press is near to,
-// if any
+   /**
+    * register mouse click before drag, stores the coordinate, and calculates the nearest vertex
+    * @param e mouse event
+    */
    public void mousePressed(MouseEvent e) {
       oldX = e.getX();
       oldY = e.getY();
@@ -197,7 +192,7 @@ public class CubeComponent extends JComponent implements MouseInputListener, Mou
    }
 
    /**
-    *
+    * bounces cube inside window boundary
     */
    public void bounce() {
       ActionListener listener = new TimerListener();
@@ -216,34 +211,34 @@ public class CubeComponent extends JComponent implements MouseInputListener, Mou
       // Check if moves over the bounds. If so, adjust the position and speed.
       if (vertexArray3D[0].getX() < this.getX() || vertexArray3D[1].getX() < this.getX() || vertexArray3D[4].getX() < this.getX() || vertexArray3D[5].getX() < this.getX()) {
          velocityX = -velocityX; // Reflect along normal
-         //vertexArray3D[i].setX(this.getX());     // Re-position the ball at the edge
-         vertexArray3D[0].setX(this.getX());     // Re-position the ball at the edge
-         vertexArray3D[1].setX(this.getX());     // Re-position the ball at the edge
-         vertexArray3D[4].setX(this.getX());     // Re-position the ball at the edge
-         vertexArray3D[5].setX(this.getX());     // Re-position the ball at the edge
 
-         vertexArray3D[2].setX(this.getX() + cube.getCubeLength());     // Re-position the ball at the edge
-         vertexArray3D[3].setX(this.getX() + cube.getCubeLength());     // Re-position the ball at the edge
-         vertexArray3D[6].setX(this.getX() + cube.getCubeLength());     // Re-position the ball at the edge
-         vertexArray3D[7].setX(this.getX() + cube.getCubeLength());     // Re-position the ball at the edge
+         vertexArray3D[0].setX(this.getX());     // Re-position  at the edge
+         vertexArray3D[1].setX(this.getX());
+         vertexArray3D[4].setX(this.getX());
+         vertexArray3D[5].setX(this.getX());
+
+         vertexArray3D[2].setX(this.getX() + cube.getCubeLength());
+         vertexArray3D[3].setX(this.getX() + cube.getCubeLength());
+         vertexArray3D[6].setX(this.getX() + cube.getCubeLength());
+         vertexArray3D[7].setX(this.getX() + cube.getCubeLength());
 
       } else if (vertexArray3D[2].getX() > this.getWidth() || vertexArray3D[3].getX() > this.getWidth() || vertexArray3D[6].getX() > this.getWidth() || vertexArray3D[7].getX() > this.getWidth()) {
          velocityX = -velocityX;
-         //vertexArray3D[i].setX(this.getWidth());
-         vertexArray3D[2].setX(this.getWidth());     // Re-position the ball at the edge
-         vertexArray3D[3].setX(this.getWidth());     // Re-position the ball at the edge
-         vertexArray3D[6].setX(this.getWidth());     // Re-position the ball at the edge
-         vertexArray3D[7].setX(this.getWidth());     // Re-position the ball at the edge
 
-         vertexArray3D[0].setX(this.getWidth() - cube.getCubeLength());     // Re-position the ball at the edge
-         vertexArray3D[1].setX(this.getWidth() - cube.getCubeLength());     // Re-position the ball at the edge
-         vertexArray3D[4].setX(this.getWidth() - cube.getCubeLength());     // Re-position the ball at the edge
-         vertexArray3D[5].setX(this.getWidth() - cube.getCubeLength());     // Re-position the ball at the edge
+         vertexArray3D[2].setX(this.getWidth());
+         vertexArray3D[3].setX(this.getWidth());
+         vertexArray3D[6].setX(this.getWidth());
+         vertexArray3D[7].setX(this.getWidth());
+
+         vertexArray3D[0].setX(this.getWidth() - cube.getCubeLength());
+         vertexArray3D[1].setX(this.getWidth() - cube.getCubeLength());
+         vertexArray3D[4].setX(this.getWidth() - cube.getCubeLength());
+         vertexArray3D[5].setX(this.getWidth() - cube.getCubeLength());
       }
-      // May cross both x and y bounds
+
       if (vertexArray3D[0].getY() < this.getY() || vertexArray3D[3].getY() < this.getY() || vertexArray3D[4].getY() < this.getY() || vertexArray3D[7].getY() < this.getY()) {
          velocityY = -velocityY;
-         //vertexArray3D[i].setY(this.getY());
+
          vertexArray3D[0].setY(this.getY());
          vertexArray3D[3].setY(this.getY());
          vertexArray3D[4].setY(this.getY());
@@ -256,7 +251,7 @@ public class CubeComponent extends JComponent implements MouseInputListener, Mou
 
       } else if (vertexArray3D[1].getY() > this.getHeight() || vertexArray3D[2].getY() > this.getHeight() || vertexArray3D[5].getY() > this.getHeight() || vertexArray3D[6].getY() > this.getHeight()) {
          velocityY = -velocityY;
-         //vertexArray3D[i].setY(this.getHeight());
+
          vertexArray3D[1].setY(this.getHeight());
          vertexArray3D[2].setY(this.getHeight());
          vertexArray3D[5].setY(this.getHeight());
@@ -269,7 +264,10 @@ public class CubeComponent extends JComponent implements MouseInputListener, Mou
       }
    }
 
-   // Deals with a mouse drag
+   /**
+    * register mouse drag and translate the cube coordinates spontaneously with mouse movement
+    * @param e mouse event
+    */
    public void mouseDragged(MouseEvent e) {
       boolean front = true;
 // if drag is not from a vertex, cube is translated...
@@ -318,6 +316,11 @@ public class CubeComponent extends JComponent implements MouseInputListener, Mou
 
    // Translates the cube towards or away from user
 // according to rolling the mouse wheel
+
+   /**
+    *
+    * @param e mouse event
+    */
    public void mouseWheelMoved(MouseWheelEvent e) {
       int n = e.getWheelRotation();
 // if statement checks that the cube is within a certain distance range
@@ -356,8 +359,10 @@ public class CubeComponent extends JComponent implements MouseInputListener, Mou
       return new Point3D(eyePoint.getX() + sol * v.getX(), eyePoint.getY() + sol * v.getY(), eyePoint.getZ() + sol * v.getZ());
    }
 
-   // After a resize, repositions the cube accordingly
-// and set's the user's eyePoint to the middle of the window
+   /**
+    * positions cube dynamically with window resize
+    * @param e component event
+    */
    public void componentResized(ComponentEvent e) {
       setEyePoint();
       Point3D c = centrePoint();

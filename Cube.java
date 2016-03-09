@@ -3,7 +3,9 @@
  */
 import java.awt.*;
 
-
+/**
+ * This class defines a cube
+ */
 public class Cube {
 
    private double cubeLength; // Length of each edge of the cube
@@ -20,6 +22,7 @@ public class Cube {
       this.cubeLength = length;
    }
 
+   // setters and getters
    public double getCubeLength() {
       return cubeLength;
    }
@@ -60,9 +63,13 @@ public class Cube {
       this.yPoints[i] = p;
    }
 
+   /**
+    * draws six sided face of cube
+    * @param g graphics
+    */
    public void draw(Graphics g) {
 
-      // Draws face 0
+      // face 0
       if (visibleVertices[0] && visibleVertices[1] && visibleVertices[2] && visibleVertices[3]) {
          g.setColor(Color.black);
          for (int i = 0; i <= 3; i++) {
@@ -74,7 +81,7 @@ public class Cube {
          g.drawPolygon(xPoints, yPoints, 4);
       }
 
-      // Draws face 1
+      // face 1
       if (visibleVertices[4] && visibleVertices[5] && visibleVertices[6] && visibleVertices[7]) {
          g.setColor(Color.black);
          for (int i = 4; i <= 7; i++) {
@@ -86,7 +93,7 @@ public class Cube {
          g.drawPolygon(xPoints, yPoints, 4);
       }
 
-      // Draws face 2
+      // face 2
       if (visibleVertices[0] && visibleVertices[1] && visibleVertices[5] && visibleVertices[4]) {
          g.setColor(Color.black);
          xPoints[0] = (int) vertexArray2D[0].getX();
@@ -102,7 +109,7 @@ public class Cube {
          g.drawPolygon(xPoints, yPoints, 4);
       }
 
-      // Draws face 3
+      // face 3
       if (visibleVertices[2] && visibleVertices[3] && visibleVertices[7] && visibleVertices[6]) {
          g.setColor(Color.black);
          xPoints[0] = (int) vertexArray2D[2].getX();
@@ -118,7 +125,7 @@ public class Cube {
          g.drawPolygon(xPoints, yPoints, 4);
       }
 
-      //Draws face 4
+      // face 4
       if (visibleVertices[1] && visibleVertices[2] && visibleVertices[6] && visibleVertices[5]) {
          g.setColor(Color.black);
          xPoints[0] = (int) vertexArray2D[1].getX();
@@ -134,7 +141,7 @@ public class Cube {
          g.drawPolygon(xPoints, yPoints, 4);
       }
 
-      //Draws face 5
+      // face 5
       if (visibleVertices[0] && visibleVertices[3] && visibleVertices[7] && visibleVertices[4]) {
          g.setColor(Color.black);
          xPoints[0] = (int) vertexArray2D[0].getX();
